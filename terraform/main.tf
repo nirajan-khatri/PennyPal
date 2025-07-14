@@ -114,8 +114,8 @@ resource "aws_lb_listener" "app" {
   }
 }
 
-resource "aws_dynamodb_table" "expenses" {
-  name           = "expenses"
+resource "aws_dynamodb_table" "transactions" {
+  name           = "transactions"
   billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "id"
 
@@ -160,5 +160,5 @@ resource "aws_route_table_association" "public_b" {
 }
 
 output "dynamodb_table_name" {
-  value = aws_dynamodb_table.expenses.name
+  value = aws_dynamodb_table.transactions.name
 } 

@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 8080;
 
 // AWS / JWT config
 const REGION = process.env.AWS_REGION || 'us-east-1';
-const TABLE_NAME = process.env.DYNAMODB_TABLE || 'expenses';
+const TABLE_NAME = process.env.DYNAMODB_TABLE || 'transactions';
 const USER_TABLE = process.env.DYNAMODB_USER_TABLE || 'users';
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 const db = new DynamoDBClient({ region: REGION });
