@@ -1,0 +1,14 @@
+#!/bin/bash
+apt-get update
+apt-get install -y nodejs npm git
+cd /home/ubuntu
+# Clone your repo or copy files from S3 if needed
+# For demo, assume app is baked into AMI or use a public repo
+# git clone https://github.com/yourusername/expense-tracker-app.git
+# cd expense-tracker-app/backend
+# For this template, just start a placeholder server
+cat <<EOF > index.js
+const http = require('http');
+http.createServer((req, res) => { res.end('Expense Tracker running'); }).listen(${app_port});
+EOF
+nohup node index.js & 
