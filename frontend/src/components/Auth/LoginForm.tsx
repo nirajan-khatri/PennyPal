@@ -39,8 +39,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegister }) =>
       } else {
         setError(data.error || 'Login failed');
       }
-    } catch (err) {
-      setError('Network error');
+    } catch {
+      setError('Login failed');
     } finally {
       setLoading(false);
     }

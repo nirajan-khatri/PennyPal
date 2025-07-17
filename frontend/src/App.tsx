@@ -16,9 +16,9 @@ const App: React.FC = () => {
     if (stored) {
       setToken(stored);
       try {
-        const decoded: any = jwtDecode(stored);
+        const decoded = jwtDecode<{ name?: string; username?: string; email?: string }>(stored);
         setUser({ name: decoded.name || decoded.username, email: decoded.email || decoded.username });
-      } catch (e) {
+      } catch {
         setUser(null);
       }
     }
@@ -28,9 +28,9 @@ const App: React.FC = () => {
     setToken(jwt);
     localStorage.setItem('jwt_token', jwt);
     try {
-      const decoded: any = jwtDecode(jwt);
+      const decoded = jwtDecode<{ name?: string; username?: string; email?: string }>(jwt);
       setUser({ name: decoded.name || decoded.username, email: decoded.email || decoded.username });
-    } catch (e) {
+    } catch {
       setUser(null);
     }
   };

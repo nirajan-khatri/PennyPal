@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Trash2, ArrowDownCircle, ArrowUpCircle, Plus, DollarSign, TrendingUp, TrendingDown, Wallet, PiggyBank, Receipt, Target } from 'lucide-react';
+import { Trash2, Wallet, Plus, TrendingDown, TrendingUp, Target, DollarSign, Receipt, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
@@ -17,7 +17,7 @@ interface ExpenseRecord {
 
 interface ExpenseTrackerProps {
   token: string;
-  onLogout: () => void;
+  // onLogout prop removed as it is unused
 }
 
 const fetchTransactions = async (token: string): Promise<ExpenseRecord[]> => {
@@ -50,7 +50,7 @@ const deleteTransaction = async ({ token, id }: { token: string; id: string }) =
   return id;
 };
 
-const ExpenseTracker: React.FC<ExpenseTrackerProps> = ({ token, onLogout }) => {
+const ExpenseTracker: React.FC<ExpenseTrackerProps> = ({ token }) => {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState<'expense' | 'income'>('expense');
@@ -71,8 +71,8 @@ const ExpenseTracker: React.FC<ExpenseTrackerProps> = ({ token, onLogout }) => {
       setType('expense');
       toast.success("Transaction added successfully");
     },
-    onError: (err: any) => {
-      toast.error(err.message || 'Failed to add record');
+    onError: (err: unknown) => {
+      toast.error((err as Error).message || 'Failed to add record');
     },
   });
 
