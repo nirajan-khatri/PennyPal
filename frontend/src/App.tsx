@@ -59,7 +59,7 @@ const App: React.FC = () => {
           )}
         </div>
       ) : (
-        <ExpenseTracker token={token} onLogout={handleLogout} />
+        <ExpenseTracker token={token} />
       )}
     </div>
   );
