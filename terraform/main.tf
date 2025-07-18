@@ -52,7 +52,8 @@ resource "aws_launch_template" "app" {
   key_name      = var.key_name
 
   user_data = base64encode(templatefile("${path.module}/user_data.sh.tmpl", {
-    app_port = 8080
+    app_port = 8080,
+    artifact_bucket_name = var.artifact_bucket_name
   }))
 
   vpc_security_group_ids = [aws_security_group.instance.id]
@@ -157,6 +158,11 @@ resource "aws_route_table_association" "public_a" {
 resource "aws_route_table_association" "public_b" {
   subnet_id      = aws_subnet.public_b.id
   route_table_id = aws_route_table.public.id
+}
+
+resource "aws_s3_bucket" "artifact_bucket" {
+  bucket = var.artifact_bucket_name
+  force_destroy = true
 }
 
 output "dynamodb_table_name" {

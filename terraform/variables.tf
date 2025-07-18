@@ -16,4 +16,9 @@ variable "key_name" {
 variable "instance_count" {
   description = "Number of EC2 instances to launch"
   default     = 2
+}
+
+variable "artifact_bucket_name" {
+  description = "Name of the S3 bucket for deployment artifacts"
+  default     = "my-expense-tracker-artifacts"
 } 

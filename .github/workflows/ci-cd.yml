@@ -1,4 +1,4 @@
-name: Minimal CI/CD
+name: Build and Upload Artifact
 
 on:
   push:
@@ -7,14 +7,12 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-validate:
+  build-and-upload:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Frontend build
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -30,20 +28,34 @@ jobs:
           cd frontend
           npm run build
 
-      # Backend build (optional: add tests if you have them)
       - name: Install backend dependencies
         run: |
           cd backend
           npm ci
 
-      # Terraform validation
+      - name: Package build artifact
+        run: |
+          zip -r latest-build.zip backend frontend/build
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.5.0"
 
-      - name: Terraform init and validate
+      - name: Get artifact bucket name
+        id: artifact_bucket
         run: |
           cd terraform
           terraform init
-          terraform validate 
+          echo "bucket_name=$(terraform output -raw artifact_bucket_name)" >> $GITHUB_OUTPUT
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upload build to S3
+        run: |
+          aws s3 cp latest-build.zip s3://${{ steps.artifact_bucket.outputs.bucket_name }}/latest-build.zip 

@@ -1,14 +1,22 @@
 #!/bin/bash
+set -e
 apt-get update
-apt-get install -y nodejs npm git
+apt-get install -y nodejs npm git unzip awscli
+
 cd /home/ubuntu
-# Clone your repo or copy files from S3 if needed
-# For demo, assume app is baked into AMI or use a public repo
-# git clone https://github.com/yourusername/expense-tracker-app.git
-# cd expense-tracker-app/backend
-# For this template, just start a placeholder server
-cat <<EOF > index.js
-const http = require('http');
-http.createServer((req, res) => { res.end('Expense Tracker running'); }).listen(${app_port});
-EOF
+
+# Download the latest build artifact from S3
+aws s3 cp s3://${artifact_bucket_name}/latest-build.zip .
+
+# Unzip and install dependencies
+unzip -o latest-build.zip
+cd backend
+npm ci
+
+# (Optional) Build frontend if needed
+# cd ../frontend
+# npm ci
+# npm run build
+
+# Start the backend (adjust as needed)
 nohup node index.js & 
