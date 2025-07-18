@@ -37,6 +37,15 @@ jobs:
         run: |
           zip -r latest-build.zip backend frontend/build
 
+      # ── AWS Credentials ──────────────────────────────────────────────────────────
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            us-east-1
+
+      # ── Terraform setup & deploy ────────────────────────────────────────────────
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -51,10 +60,6 @@ jobs:
         run: |
           cd terraform
           terraform apply -auto-approve
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
 
       - name: Get artifact bucket name
         id: artifact_bucket
@@ -62,13 +67,8 @@ jobs:
           cd terraform
           echo "bucket_name=$(terraform output -raw artifact_bucket_name)" >> $GITHUB_OUTPUT
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
+      # ── Upload build to S3 ───────────────────────────────────────────────────────
       - name: Upload build to S3
         run: |
-          aws s3 cp latest-build.zip s3://${{ steps.artifact_bucket.outputs.bucket_name }}/latest-build.zip 
+          aws s3 cp latest-build.zip \
+            s3://${{ steps.artifact_bucket.outputs.bucket_name }}/latest-build.zip
